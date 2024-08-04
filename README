@@ -1,0 +1,62 @@
+After downloading the zipped folder, follow these steps:
+
+### Installation and Run Instructions
+
+1. **Unzip the Downloaded Folder:**
+
+   - Locate the downloaded zip file (e.g., `Nool 2.0.zip`) on your computer.
+   - Right-click the zip file and select "Extract All" or use a zip utility program to unzip the folder.
+
+2. **Install Python:**
+
+   - Open a web browser and go to [python.org](https://www.python.org/).
+   - Download the latest version of Python for your operating system (Windows, macOS, or Linux).
+   - Run the installer and follow the prompts. Make sure to check the option "Add Python to PATH" during installation.
+
+3. **Open a Command Prompt or Terminal:**
+
+   - **Windows:**
+     - Press `Win + R`, type `cmd`, and press Enter.
+     - Alternatively, navigate to the unzipped folder (e.g., `src`) in File Explorer, hold down Shift, right-click, and select "Open PowerShell window here".
+
+   - **macOS:**
+     - Press `Cmd + Space` to open Spotlight Search.
+     - Type `Terminal` and press Enter.
+
+   - **Linux:**
+     - Use `Ctrl + Alt + T` to open Terminal.
+
+4. **Navigate to the Application Directory:**
+
+   Use the `cd` command to navigate to the directory where you unzipped your application. For example:
+
+   ```bash
+   cd path/to/your/unzipped/folder
+   ```
+
+   Replace `path/to/your/unzipped/folder` with the actual path to your unzipped  folder.
+
+5. **Install Python Dependencies:**
+
+   - Run the following command to install Python dependencies using `pip` (Python's package installer):
+
+   
+     pip install -r requirements.txt
+  
+
+6. **Run the Application:**
+
+   - Once dependencies are installed, you can run your application using Python. 
+
+     
+     python .\src\main.py
+    
+
+### Example Summary:
+
+After unzipping the folder:
+- Install Python.
+- Open Command Prompt or Terminal.
+- Navigate to the unzipped folder.
+- Install dependencies with `pip install -r requirements.txt`.
+- Run your application with `python .\src\main.py`.

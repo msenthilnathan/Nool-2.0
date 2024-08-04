@@ -1,0 +1,8 @@
+<config>
+    <folder_id>1hNUQxPSpsArumY0rR8BdcmwmXwHaRTSj</folder_id>
+    <file_id_to_download>1o3QSwnuXZbdJHK2E4iazw7FA5HF4q5sr</file_id_to_download>
+    <file_name_to_download>students.xlsx</file_name_to_download>
+    <file_id_to_rename>1xfdj2ieY3YnIkM9dDcolsBpSo8c-t7rP</file_id_to_rename>
+    <new_file_name>test_name_after_rename</new_file_name>
+    <test_file_to_upload>status.xlsx</test_file_to_upload>
+</config>
