@@ -8,17 +8,22 @@ from google.oauth2.credentials import Credentials
 import httplib2
 from oauth2client.client import AccessTokenCredentials
 from datetime import datetime, timezone
+import xml.etree.ElementTree as ET
 
 
 
 class GDriveHandler:
-    def __init__(self, credential_file, client_secrets_file):
+    def __init__(self):
         try:
-            self.credential_file = credential_file
-            self.client_secrets_file = client_secrets_file
+            self.credential_file = os.join("config","mycreds.txt")
+            self.client_secrets_file = os.join("config","client_secrets.json")
             self.setup_logging()
             self.drive = self.authenticate()
             self.connected = True
+            # Read configuration from the XML file
+            gdrive_props_file = os.path.join('config', 'gdrive_test_properties.xml')
+            self.gdrive_props = self.read_config(gdrive_props_file)
+        
         except socket.gaierror:
             logging.error("Network error: Unable to resolve hostname. Please check your internet connection.")
             self.connected = False
@@ -50,6 +55,52 @@ class GDriveHandler:
         
         # Define a custom logging format
 
+    def read_config(self,config_file):
+        tree = ET.parse(config_file)
+        root = tree.getroot()
+    
+        config = {
+            'folder_id': root.find('folder_id').text,
+            'file_id_to_download': root.find('file_id_to_download').text,
+            'file_name_to_download': root.find('file_name_to_download').text,
+            'file_id_to_rename': root.find('file_id_to_rename').text,
+            'new_file_name': root.find('new_file_name').text,
+            'test_file_to_upload': root.find('test_file_to_upload').text
+        }
+    
+        return config
+    
+    def download_students(self):
+        
+        folder_id = self.gdrive_props['folder_id']
+        file_id_to_download = self.gdrive_props['file_id_to_download']
+        file_name_to_download = self.gdrive_props['file_name_to_download']
+                
+        try:
+            # Check if lock file exists
+            if self.check_lock_file(folder_id, 'process.lock'):
+                print('Resource is locked by someone else. Please wait.')
+            else:
+            
+                current_directory = os.getcwd()
+                print(f"Current working directory: {current_directory}")
+        
+                # Create a lock file
+                print('Creating lock file...')
+                self.create_lock_file(folder_id, 'process.lock')
+            
+                # Download the file as specified in the config
+                local_path = os.path.join('data', file_name_to_download)
+                print(f"Downloading the file... {local_path}")
+                self.download_file(file_id_to_download, local_path)
+            
+                # Delete the lock file
+                print('Deleting lock file...') 
+                self.delete_lock_file(folder_id, 'process.lock')
+        except Exception as e:
+            print(f'An error occurred: {str(e)}')
+            # Ensure the lock file is deleted in case of an error
+            self.delete_lock_file(folder_id, 'process.lock')
 
 
 
