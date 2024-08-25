@@ -9,9 +9,13 @@ class SidePanelManager:
         self.status_df = status_df
         self.data_access = dataaccess
         self.details_vars = {col: tk.StringVar() for col in status_df.columns}
-        self.original_details = {}
+        self.current_student_id=''
+        self.current_radio_value=tk.StringVar(value="")
+        self.old_radio_value=tk.StringVar(value="")
         self.create_widgets()
-        #self.bind_variable_changes()
+        self.bind_variable_changes()
+        self.data_changed = False
+
 
     def create_widgets(self):
         # Title
@@ -22,18 +26,17 @@ class SidePanelManager:
         for label, var in self.details_vars.items():
             if label == 'Books Given Status':
                 # Create radio buttons for Book Given Status
-                var.set('Not Given')
                 
                 tk.Label(self.master, text=label).grid(row=row, column=0, sticky='w')
-                self.not_given_radio = tk.Radiobutton(self.master, text='Not Given', variable=var, value='Not Given')
+                self.not_given_radio = tk.Radiobutton(self.master, text='Not Given', variable=self.current_radio_value, value='Not Given')
                 self.not_given_radio.grid(row=row, column=1, sticky='w')
                 row += 1
 
-                self.all_given_radio = tk.Radiobutton(self.master, text='All Given', variable=var, value='All Given')
+                self.all_given_radio = tk.Radiobutton(self.master, text='All Given', variable=self.current_radio_value, value='All Given')
                 self.all_given_radio.grid(row=row, column=1, sticky='w')
                 row += 1
 
-                self.partially_given_radio = tk.Radiobutton(self.master, text='Partially Given', variable=var, value='Partially Given')
+                self.partially_given_radio = tk.Radiobutton(self.master, text='Partially Given', variable=self.current_radio_value, value='Partially Given')
                 self.partially_given_radio.grid(row=row, column=1, sticky='w')
                 row += 1
             else:
@@ -50,47 +53,88 @@ class SidePanelManager:
         
 
     def bind_variable_changes(self):
-        for var in self.details_vars.values():
-            var.trace_add('write', self.check_for_changes)
+        #for var in self.details_vars.values():
+        self.current_radio_value.trace_add('write', self.onRadioButtonSelect)
 
-    def check_for_changes(self, *args):
-        current_details = {col: var.get() for col, var in self.details_vars.items()}
-        if current_details != self.original_details:
-            self.save_button.config(state=tk.NORMAL)
-        else:
-            self.save_button.config(state=tk.NORMAL)
+    def onRadioButtonSelect(self, *args):
+        if self.isFirstTime == True:
+            #print(f"Initializing the side panel from global status. No need to update radio selection")
+            return
+        
+
+        print(f"StudentID:{self.current_student_id}; Button Selected:{self.current_radio_value.get()}; Old button: {self.old_radio_value.get()}")
+        if self.current_radio_value.get() == self.old_radio_value.get():
+            print(f"No button change")
+            return
+            
+        self.data_changed = True
+        if self.current_radio_value.get() == "Not Given" :
+            self.details_vars['Books Given Status'].set('Not Given')
+            self.details_vars['Books Given Date'].set("")
+            self.details_vars['Grade Given'].set("")
+            return
+        
+        current_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        current_grade = self.data_access.students_df.loc[self.data_access.students_df['Student ID'] == int(self.current_student_id), 'Grade Name'].values[0]
+
+        self.details_vars['Books Given Status'].set(self.current_radio_value.get())
+        self.details_vars['Books Given Date'].set(current_time)
+        self.details_vars['Grade Given'].set(current_grade)
+        
+        self.save_button.config(state=tk.NORMAL)
             #self.save_button.config(state=tk.DISABLED)
 
     def show_selected_student_details_on_side_panel(self, student_id):
+        if self.current_student_id != '' and  self.current_student_id != student_id and self.data_changed:
+            print(f"Auto saving {self.current_student_id}")
+            self.save_details()
+            
+        self.current_student_id=student_id
+        self.isFirstTime = True
+
         selected_row = self.status_df[self.status_df['Student ID'] == student_id]
-
+        self.current_radio_button='Not Given'
         if selected_row.empty:
-            print(f"No student found with ID {student_id}")
-            for var in self.details_vars.values():
-                var.set('')
-        else:
-            student_data = selected_row.squeeze()
-            for col in self.details_vars:
-                value = self.status_df.loc[self.status_df['Student ID'] == int(student_id),col].squeeze()
-                # Check if the value is NaN and set the details_var accordingly
-                if pd.isna(value):
-                    self.details_vars[col].set('')
-                else:
-                    self.details_vars[col].set(str(value))
-            if student_data['Books Given Status'] == 'All Given':
-                    self.details_vars['Books Given Status'].set('All Given')
-                    self.all_given_radio.select()
-            elif student_data['Books Given Status'] == 'Partially Given':
-                    self.details_vars['Books Given Status'].set('Partially Given')
-                    self.partially_given_radio.select()
+            print(f"No status found with ID {student_id}. Initialize it")
+            self.status_df = self.data_access.initStatusForAStudent(student_id)
+            
+            selected_row = self.status_df[self.status_df['Student ID'] == int(student_id)]
+            if selected_row.empty:
+                print(f"Fatal: Still not found")
+                selected_row = self.data_access.status_df[self.data_access.status_df['Student ID'] == int(student_id)]
+                if selected_row.empty:
+                    print(f"Fatal 2: Still not found")
+        #else:
+            #print(f"status found with ID {student_id}.");
+        student_data = selected_row.squeeze()
+        for col in self.details_vars:
+            value = self.status_df.loc[self.status_df['Student ID'] == int(student_id),col].squeeze()
+            # Check if the value is NaN and set the details_var accordingly
+            #print(f"Check column:{col}={value}")
+            if col != 'Student ID' and pd.isna(value) :
+                self.details_vars[col].set('')
             else:
-                    self.details_vars['Books Given Status'].set('Not Given')
-                    self.not_given_radio.select()
-
-
+                self.details_vars[col].set(str(value))
+            
+        if student_data['Books Given Status'] == 'All Given':
+            self.details_vars['Books Given Status'].set('All Given')
+            self.all_given_radio.select()
+        elif student_data['Books Given Status'] == 'Partially Given':
+            self.details_vars['Books Given Status'].set('Partially Given')
+            self.partially_given_radio.select()
+        else:
+            self.details_vars['Books Given Status'].set('Not Given')
+            self.not_given_radio.select()
+            
+            
+        self.isFirstTime = False
 
 
     def save_details(self):
+        
+        if not self.data_changed:
+            print(f"No change in data")
+
         # Retrieve the current values from the detail fields
         entry_details = {col: var.get() for col, var in self.details_vars.items()}
         student_id = entry_details['Student ID']
@@ -104,25 +148,27 @@ class SidePanelManager:
             books_given_status_from_entry="Not Given"
         if pd.isna(books_given_status_from_dataframe):
             books_given_status_from_dataframe="Not Given"
-
         if books_given_status_from_entry == "Not Given" :
             self.status_df.loc[self.status_df['Student ID'] == int(student_id),'Books Given Date'] =  ''
             self.status_df.loc[self.status_df['Student ID'] == int(student_id),'Books Given Status'] = books_given_status_from_entry
             self.data_access.save_status()
         elif books_given_status_from_entry != books_given_status_from_dataframe:
             self.status_df.loc[self.status_df['Student ID'] == int(student_id),'Books Given Status'] = books_given_status_from_entry
-            # Update the Date Given field with the current local time
-            current_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-            self.details_vars['Books Given Date'].set(current_time)
+            if pd.isna(books_given_date_from_entry):
+                # Update the Date Given field with the current local time
+                current_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                self.details_vars['Books Given Date'].set(current_time)
+            else:
+                current_time = books_given_date_from_entry
+    
             self.status_df.loc[self.status_df['Student ID'] == int(student_id),'Books Given Date'] =  current_time
+            self.status_df.loc[self.status_df['Student ID'] == int(student_id),'Grade Given'] = entry_details['Grade Given'];
             self.data_access.save_status()
+            self.data_changed=False
+            print(f"Changes saved")
         else:
             print("No change in status to save")
-
-
-
-        # Disable the save button after saving
-        #self.save_button.config(state=tk.DISABLED)
+        
 
     
     #Function to clear the side panel

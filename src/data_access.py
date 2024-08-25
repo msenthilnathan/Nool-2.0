@@ -29,6 +29,7 @@ class DataAccess:
         print(f"Reading Excel file: {self.students_file}")
         try:
             students_df = pd.read_excel(self.students_file, skiprows=self.skiprows, usecols=self.usecols)[self.usecols]
+            print(f"First few students read:{students_df.head()}")
         except Exception as e:
             print("Error reading Excel file with parameters:", e)
             students_df = pd.read_excel(self.students_file)
@@ -69,19 +70,40 @@ class DataAccess:
     def read_status_data(self):
         if os.path.exists(self.status_file): 
             try:    
-                status_df = pd.read_excel(self.status_file)
-                print("First 5 rows of the input status file with parameters:\n", status_df.head())
+                self.status_df = pd.read_excel(self.status_file)
+                print("First 5 rows of the input status file with parameters:\n", self.status_df.head())
             except Exception as e:
                 print("Error reading status file with parameters:", e)
+                print(f"First 5 rows of the input Excel file without parameters:\n", self.status_df.head())
         else:
-                #initialise status_df with StudentID, firstname, lastname, grade assigned, booksgivendate,fullorpartial,givengrade; populte one row in status_df for each student id in students_df with the rest of the columns as empty strings
-                status_df = self.students_df[['Student ID', 'StudentFirstName', 'StudentLastName']]     
-                status_df['Grade'] = self.students_df['Grade Name']
-                status_df['Books Given Date'] = ''
-                status_df['Books Given Status'] = ''
-        print("First 5 rows of the input Excel file without parameters:\n", status_df.head())
+            print(f"File {self.status_file} not found.")
+            self.status_df = self.students_df[['Student ID', 'StudentFirstName', 'StudentLastName']]
+            self.status_df['Grade Given'] = ''
+            self.status_df['Books Given Date'] = ''
+            self.status_df['Books Given Status'] = ''
+            print(f"After status initialized:{self.status_df}")
+
+                
     
-        return status_df
+        return self.status_df
+
+    def initStatusForAStudent(self,student_id):
+        print(f"Before update status_df:{self.status_df}")
+
+        new_row = {
+            'Student ID': int(student_id),
+            'StudentFirstName': self.students_df.loc[self.students_df['Student ID'] == int(student_id),'StudentFirstName'].values[0],
+            'StudentLastName': self.students_df.loc[self.students_df['Student ID'] == int(student_id),'StudentLastName'].values[0],
+            'Grade Given': '',
+            'Books Given Date': '',
+            'Books Given Status' : ''
+            }
+        new_row_df = pd.DataFrame([new_row])
+
+        self.status_df = pd.concat([self.status_df, new_row_df], ignore_index=True)
+        print(f"Updated status_df:{self.status_df}")
+        return self.status_df
+
 
     def update_status(self, selected_student_id, details_vars):
         print(f"Updating status for student ID: {selected_student_id}")
