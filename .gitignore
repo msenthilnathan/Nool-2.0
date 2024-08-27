@@ -4,3 +4,7 @@ __pycache__/
 .env
 data/
 config/mycreds
+config/mycreds.txt
+log/errors_exceptions.log
+log/info_trace_debug.log
+config/mycreds.json

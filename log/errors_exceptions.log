@@ -116,3 +116,7 @@ AttributeError: 'GDriveHandler' object has no attribute 'drive'
 2024-07-31 21:47:53,960 - ERROR - Authentication failed: Access token refresh failed: invalid_grant: Bad Request - c:\Users\msenthilnathan\chatGPT-GUI\Nool 2.0\src\gdrive_handler.py:89
 2024-07-31 21:47:53,960 - ERROR - An error occurred: Access token refresh failed: invalid_grant: Bad Request - c:\Users\msenthilnathan\chatGPT-GUI\Nool 2.0\src\gdrive_handler.py:26
 2024-07-31 21:49:21,610 - ERROR - Authentication failed: Access token refresh failed: invalid_grant: Bad Request - c:\Users\msenthilnathan\chatGPT-GUI\Nool 2.0\src\gdrive_handler.py:89
+2024-08-26 22:24:55,096 - ERROR - Authentication failed: Access token refresh failed: invalid_grant: Token has been expired or revoked. - c:\Users\msenthilnathan\Nool 2.0\src\gdrive_handler.py:140
+2024-08-26 22:24:55,096 - ERROR - An error occurred: Access token refresh failed: invalid_grant: Token has been expired or revoked. - c:\Users\msenthilnathan\Nool 2.0\src\gdrive_handler.py:31
+2024-08-26 22:32:27,688 - ERROR - Authentication failed: Access token refresh failed: invalid_grant: Token has been expired or revoked. - C:\Users\msenthilnathan\Nool 2.0\src\gdrive_handler.py:140
+2024-08-26 22:32:27,688 - ERROR - An error occurred: Access token refresh failed: invalid_grant: Token has been expired or revoked. - C:\Users\msenthilnathan\Nool 2.0\src\gdrive_handler.py:31

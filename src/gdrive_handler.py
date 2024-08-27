@@ -15,8 +15,8 @@ import xml.etree.ElementTree as ET
 class GDriveHandler:
     def __init__(self):
         try:
-            self.credential_file = os.join("config","mycreds.txt")
-            self.client_secrets_file = os.join("config","client_secrets.json")
+            self.credential_file = os.path.join("config","mycreds.json")
+            self.client_secrets_file = os.path.join("config","client_secrets.json")
             self.setup_logging()
             self.drive = self.authenticate()
             self.connected = True
