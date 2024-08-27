@@ -41,7 +41,7 @@ class GDriveHandler:
 
         # Configure info, trace, debug log
         info_trace_debug_logfile = os.path.join(log_dir, 'info_trace_debug.log')
-        logging.basicConfig(level=logging.DEBUG,
+        logging.basicConfig(level=logging.ERROR,
                             format=log_format,
                             filename=info_trace_debug_logfile,
                             filemode='a')
