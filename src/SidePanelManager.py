@@ -51,6 +51,17 @@ class SidePanelManager:
         #self.save_button.config(state=tk.DISABLED)
         row += 1
         
+        # Create a label to show the total number of students
+        self.stats_student_count = tk.Label(self.master, text=f"Total number of students: {len(self.data_access.students_df)}")
+        self.stats_student_count.grid(row=row, columnspan=5, pady=10)  # Adjusted row and added pady for padding
+        row += 1
+        
+        # Calculate and display the count of 'All Given' statuses
+        all_given_count = self.status_df[self.status_df['Books Given Status'] == 'All Given'].shape[0]
+        self.status_count_label = tk.Label(self.master, text=f"Number of students with status 'All Given': {all_given_count}")
+        self.status_count_label.grid(row=row, columnspan=5, pady=10)  # Adjusted row and added pady for padding
+        row += 1
+        
 
     def bind_variable_changes(self):
         #for var in self.details_vars.values():
@@ -154,6 +165,11 @@ class SidePanelManager:
             self.status_df.loc[self.status_df['Student ID'] == int(student_id),'Grade Given'] = entry_details['Grade Given'];
 
             self.data_access.save_status()
+            self.update_status_count()
+            self.data_changed=False
+            print(f"Changes saved")
+
+
         elif books_given_status_from_entry != books_given_status_from_dataframe:
             self.status_df.loc[self.status_df['Student ID'] == int(student_id),'Books Given Status'] = books_given_status_from_entry
             if pd.isna(books_given_date_from_entry):
@@ -167,12 +183,18 @@ class SidePanelManager:
             self.status_df.loc[self.status_df['Student ID'] == int(student_id),'Grade Given'] = entry_details['Grade Given'];
             self.data_access.save_status()
             self.data_changed=False
+            self.update_status_count()
             print(f"Changes saved")
         else:
             print("No change in status to save")
         
 
-    
+    def update_status_count(self):
+        """Updates the label displaying the count of 'All Given' statuses."""
+        all_given_count = self.status_df[self.status_df['Books Given Status'] == 'All Given'].shape[0]
+        self.status_count_label.config(text=f"Number of students with status 'All Given': {all_given_count}")
+
+
     #Function to clear the side panel
     def clear_side_panel(self):
         for col in self.status_df.columns:
