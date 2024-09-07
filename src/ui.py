@@ -87,7 +87,7 @@ class StudentStatusUI:
         self.sync_button.grid(row=3, column=0, columnspan=3, padx=10, pady=10, sticky="ew")  # Adjusted row and added pady for padding
             
         # Button to exit the application
-        exit_button = tk.Button(self.root, text="Exit", command=lambda: self.root.quit(), font=("Arial", 12), bg="#f44336", fg="white")
+        exit_button = tk.Button(self.root, text="Exit", command=self.exit, font=("Arial", 12), bg="#f44336", fg="white")
         exit_button.grid(row=3, column=4, columnspan=3, padx=10, pady=10, sticky="ew")
 
         # Add a label below the Exit button
@@ -147,6 +147,10 @@ class StudentStatusUI:
         print("Sync called")
         self.data_access.sync_status()
     
+    def exit(self):
+        print(f"Exiting")
+        self.side_panel.save_details()
+        self.root.quit()
 
     def show_message(self, message):
         messagebox.showinfo("Information", message) 

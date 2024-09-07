@@ -151,6 +151,8 @@ class SidePanelManager:
         if books_given_status_from_entry == "Not Given" :
             self.status_df.loc[self.status_df['Student ID'] == int(student_id),'Books Given Date'] =  ''
             self.status_df.loc[self.status_df['Student ID'] == int(student_id),'Books Given Status'] = books_given_status_from_entry
+            self.status_df.loc[self.status_df['Student ID'] == int(student_id),'Grade Given'] = entry_details['Grade Given'];
+
             self.data_access.save_status()
         elif books_given_status_from_entry != books_given_status_from_dataframe:
             self.status_df.loc[self.status_df['Student ID'] == int(student_id),'Books Given Status'] = books_given_status_from_entry
