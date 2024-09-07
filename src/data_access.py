@@ -77,7 +77,7 @@ class DataAccess:
                 print(f"First 5 rows of the input Excel file without parameters:\n", self.status_df.head())
         else:
             print(f"File {self.status_file} not found.")
-            self.status_df = self.students_df[['Student ID', 'StudentFirstName', 'StudentLastName']]
+            self.status_df = self.students_df[['Student ID', 'Student First Name', 'Student Last Name']]
             self.status_df['Grade Given'] = ''
             self.status_df['Books Given Date'] = ''
             self.status_df['Books Given Status'] = ''
@@ -92,8 +92,8 @@ class DataAccess:
 
         new_row = {
             'Student ID': int(student_id),
-            'StudentFirstName': self.students_df.loc[self.students_df['Student ID'] == int(student_id),'StudentFirstName'].values[0],
-            'StudentLastName': self.students_df.loc[self.students_df['Student ID'] == int(student_id),'StudentLastName'].values[0],
+            'Student First Name': self.students_df.loc[self.students_df['Student ID'] == int(student_id),'Student First Name'].values[0],
+            'Student Last Name': self.students_df.loc[self.students_df['Student ID'] == int(student_id),'Student Last Name'].values[0],
             'Grade Given': '',
             'Books Given Date': '',
             'Books Given Status' : ''
